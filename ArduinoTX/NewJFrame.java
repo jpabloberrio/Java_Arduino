@@ -1,0 +1,429 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ArduinoTX;
+
+import com.panamahitek.ArduinoException;
+import com.panamahitek.PanamaHitek_Arduino;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
+import jssc.SerialPortEvent;
+import jssc.SerialPortEventListener;
+import jssc.SerialPortException;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.ImageIcon;
+import java.util.concurrent.TimeUnit;
+
+/**
+ *
+ * @author REF4001
+ */
+public class NewJFrame extends javax.swing.JFrame {
+
+    private PanamaHitek_Arduino ino = new PanamaHitek_Arduino();
+    /**
+     * Creates new form NewJFrame
+     */
+    int contador6 = 0;
+    int contador1 = 1;
+    int puntaje = 0;
+    int puntos = 0;
+    int contadorPuntos = 0;
+    int intentos = 0;
+    public static LeerFicheroExcel Archivo = new LeerFicheroExcel();
+
+    private SerialPortEventListener listener = new SerialPortEventListener() {
+        @Override
+        public void serialEvent(SerialPortEvent spe) {
+
+            try {
+                if (ino.isMessageAvailable()) {
+                    String mensaje = ino.printMessage();
+                    lbpuntos.setText(Integer.toString(puntos));
+
+                    if (contador6 == 0) {
+                        pruebas.setText(mensaje);
+                    } else {
+
+                        pruebas2.setText("lo que hay en memoria: " + Archivo.Preguntas.elementAt(contador6 - 1));
+
+                        if (mensaje.contains(Archivo.Preguntas.elementAt(contador6 - 1))) {
+                            pruebas.setText("siiiiiii");
+                            ino.sendData("2");
+                            ImageIcon icon = new ImageIcon("correcto.png");
+                            final JPanel panel = new JPanel();
+                            System.out.println("intento: " + intentos + "\n");
+                            if (intentos % 2 == 0) {
+                                JOptionPane.showMessageDialog(panel, "CORRECTO "+Archivo.Preguntas.elementAt(contador6 - 1), "Correcto ", JOptionPane.INFORMATION_MESSAGE, icon);
+
+                                puntos++;
+                            }
+                            intentos++;
+
+                            //esperar(1);
+                        } else {
+                            pruebas.setText("no coincide");
+                            ino.sendData("1");
+                            final JPanel panel = new JPanel();
+                            if (intentos % 2 == 0) {
+                                JOptionPane.showMessageDialog(panel, "INCORRECTO", "Error", JOptionPane.ERROR_MESSAGE);
+
+                               
+                            }
+                            intentos++;
+                            //esperar(1);
+
+                        }
+                    }
+
+                }
+            } catch (SerialPortException | ArduinoException ex) {
+                
+            }
+        }
+
+    };
+
+    public static void esperar(int segundos) {
+        try {
+            Thread.sleep(segundos * 1000);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public NewJFrame() {
+        initComponents();
+        respuesta.setVisible(false);
+        pruebas.setVisible(true);
+        pruebas2.setVisible(false);
+        btnReiniciar.setVisible(false);
+        try {
+            ino.arduinoRXTX("COM10", 9600, listener);
+        } catch (ArduinoException ex) {
+            
+        }
+        pregunta.setText("                          INICIO\n\n                Presione los botones para probar que funcionen \n\n                Dé clic en siguiente para comenzar");
+
+    }
+
+    public void cambiarPregunta(int valor) {
+        pruebas.setVisible(false);
+        if (Archivo.Preguntas.elementAt(valor).equals("FIN")) {
+            pregunta.setText("                          Puntaje Total de esta ronda: " + puntos + "\n\n\n                          Reinicie la aplicación para otra ronda");
+            nropregunta.setVisible(false);
+            opcion1.setText("-");
+            opcion2.setText("-");
+            opcion3.setText("-");
+            opcion4.setText("-");
+            btnSiguiente.setVisible(false);
+        } else {
+            pregunta.setText(Archivo.Preguntas.elementAt(valor));
+            opcion1.setText(Archivo.Preguntas.elementAt(valor + 1));
+            opcion2.setText(Archivo.Preguntas.elementAt(valor + 2));
+            opcion3.setText(Archivo.Preguntas.elementAt(valor + 3));
+            opcion4.setText(Archivo.Preguntas.elementAt(valor + 4));
+
+            respuesta.setText(Archivo.Preguntas.elementAt(valor + 5));
+
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jLabel1 = new javax.swing.JLabel();
+        btnSiguiente = new javax.swing.JButton();
+        nropregunta = new javax.swing.JLabel();
+        opcion1 = new javax.swing.JLabel();
+        opcion2 = new javax.swing.JLabel();
+        opcion3 = new javax.swing.JLabel();
+        opcion4 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        btnReiniciar = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        lbpuntos = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        pregunta = new javax.swing.JTextArea();
+        respuesta = new javax.swing.JLabel();
+        pruebas = new javax.swing.JLabel();
+        pruebas2 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel1.setText("Pregunta Nro:");
+
+        btnSiguiente.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        btnSiguiente.setText("Siguiente");
+        btnSiguiente.setBorder(null);
+        btnSiguiente.setMaximumSize(new java.awt.Dimension(100, 30));
+        btnSiguiente.setPreferredSize(new java.awt.Dimension(75, 37));
+        btnSiguiente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSiguienteActionPerformed(evt);
+            }
+        });
+
+        nropregunta.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        nropregunta.setForeground(new java.awt.Color(0, 102, 255));
+        nropregunta.setText("-");
+
+        opcion1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        opcion1.setText("-");
+
+        opcion2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        opcion2.setText("-");
+
+        opcion3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        opcion3.setText("-");
+
+        opcion4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        opcion4.setText("-");
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel8.setText("A");
+
+        jLabel9.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel9.setText("C");
+
+        jLabel10.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel10.setText("B");
+
+        jLabel11.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel11.setText("D");
+
+        btnReiniciar.setText("Reiniciar");
+        btnReiniciar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReiniciarActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel2.setText("Puntos");
+
+        lbpuntos.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        lbpuntos.setForeground(new java.awt.Color(255, 0, 0));
+        lbpuntos.setText("-");
+
+        pregunta.setColumns(20);
+        pregunta.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        pregunta.setLineWrap(true);
+        pregunta.setRows(5);
+        pregunta.setAutoscrolls(false);
+        jScrollPane1.setViewportView(pregunta);
+
+        respuesta.setText("jLabel3");
+
+        pruebas.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        pruebas.setForeground(new java.awt.Color(255, 0, 0));
+        pruebas.setText("prueba");
+
+        pruebas2.setText("jLabel3");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnReiniciar)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(34, 34, 34)
+                                .addComponent(respuesta)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(176, 176, 176)
+                                .addComponent(jLabel2)
+                                .addGap(18, 18, 18)
+                                .addComponent(lbpuntos)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel1)
+                                .addGap(41, 41, 41)
+                                .addComponent(nropregunta)
+                                .addGap(43, 43, 43))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(11, 11, 11)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel10)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(opcion2))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel8)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(opcion1))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel9)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(opcion3))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel11)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(opcion4)))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnSiguiente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(120, 120, 120))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(24, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 837, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(19, 19, 19))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(267, 267, 267)
+                .addComponent(pruebas)
+                .addGap(191, 191, 191)
+                .addComponent(pruebas2)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(nropregunta)
+                    .addComponent(jLabel2)
+                    .addComponent(lbpuntos)
+                    .addComponent(respuesta))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnReiniciar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(pruebas)
+                            .addComponent(pruebas2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(opcion1))
+                        .addGap(26, 26, 26)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel10)
+                            .addComponent(opcion2))
+                        .addGap(26, 26, 26)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel9)
+                            .addComponent(opcion3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(opcion4)
+                            .addComponent(jLabel11))
+                        .addGap(21, 21, 21)
+                        .addComponent(btnSiguiente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37))))
+        );
+
+        nropregunta.getAccessibleContext().setAccessibleName("nroPregunta");
+        opcion1.getAccessibleContext().setAccessibleName("opcion1");
+        opcion2.getAccessibleContext().setAccessibleName("opcion2");
+        opcion3.getAccessibleContext().setAccessibleName("opcion3");
+        opcion4.getAccessibleContext().setAccessibleName("opcion4");
+        btnReiniciar.getAccessibleContext().setAccessibleName("reiniciar");
+        pruebas.getAccessibleContext().setAccessibleName("pruebas");
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnSiguienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSiguienteActionPerformed
+        // TODO add your handling code here:
+
+        cambiarPregunta(contador6);
+        nropregunta.setText(Integer.toString(contador1));
+        contador6 = contador6 + 6;
+        contador1 = contador1 + 1;
+    }//GEN-LAST:event_btnSiguienteActionPerformed
+
+    private void btnReiniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReiniciarActionPerformed
+
+        //NewJFrame.main(null);        // TODO add your handling code here:
+        inicio();
+    }//GEN-LAST:event_btnReiniciarActionPerformed
+
+    public static void inicio() {
+        Archivo.LeerFicheroExcel();
+
+        //pregunta.setText(Archivo.Preguntas.elementAt(0));
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new NewJFrame().setVisible(true);
+
+            }
+        });
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(NewJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(NewJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(NewJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(NewJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        inicio();
+        /* Create and display the form */
+        //LeerFicheroExcel Archivo = new LeerFicheroExcel();
+
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    public static javax.swing.JButton btnReiniciar;
+    public static javax.swing.JButton btnSiguiente;
+    public static javax.swing.JLabel jLabel1;
+    public static javax.swing.JLabel jLabel10;
+    public static javax.swing.JLabel jLabel11;
+    public static javax.swing.JLabel jLabel2;
+    public static javax.swing.JLabel jLabel8;
+    public static javax.swing.JLabel jLabel9;
+    public static javax.swing.JScrollPane jScrollPane1;
+    public static javax.swing.JLabel lbpuntos;
+    public static javax.swing.JLabel nropregunta;
+    public static javax.swing.JLabel opcion1;
+    public static javax.swing.JLabel opcion2;
+    public static javax.swing.JLabel opcion3;
+    public static javax.swing.JLabel opcion4;
+    public static javax.swing.JTextArea pregunta;
+    public static javax.swing.JLabel pruebas;
+    public static javax.swing.JLabel pruebas2;
+    public static javax.swing.JLabel respuesta;
+    // End of variables declaration//GEN-END:variables
+}
